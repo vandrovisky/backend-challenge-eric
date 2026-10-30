@@ -1,0 +1,7 @@
+node_modules
+.env
+coverage
+dist
+*.log
+# MikroORM schema snapshot (generated; migrations here are hand-written SQL)
+.snapshot-*.json
