@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Headers, HttpStatus, Inject, Param, Post, Req, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, HttpStatus, Inject, Param, Post, Req, Res, UseGuards } from "@nestjs/common";
 import {
   ApiBody,
   ApiHeader,
@@ -129,10 +129,11 @@ export class WageringController {
   @ApiResponse({ status: 500, description: "FAILED (permanent, recorded)", type: ErrorResponse })
   async submit(
     @Body() body: Record<string, unknown> | undefined,
-    @Headers("idempotency-key") idempotencyKey: string | undefined,
     @Req() req: AuthenticatedRequest,
     @Res({ passthrough: true }) res: Response,
   ) {
+    // Read from req (not @Headers): the Swagger explorer would otherwise add a second, undocumented "idempotency-key" parameter next to @ApiHeader.
+    const idempotencyKey = req.header("idempotency-key");
     if (!idempotencyKey) {
       throw new PayloadValidationError("Idempotency-Key header is required", {
         fields: { "Idempotency-Key": "required" },
